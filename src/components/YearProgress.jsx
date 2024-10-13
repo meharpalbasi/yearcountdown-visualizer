@@ -20,25 +20,28 @@ const YearProgress = () => {
       
       setProgress(progressPercentage);
       setCurrentWeek(Math.floor(dayOfYear / 7) + 1);
+    };
 
-      // Calculate time left
+    const calculateTimeLeft = () => {
+      const now = new Date();
       const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
       const timeLeftMs = endOfYear - now;
-      
-      // For demonstration purposes, we'll use 80 days left
-      const eightyDaysMs = 80 * 24 * 60 * 60 * 1000;
-      const timeLeftToUse = Math.min(timeLeftMs, eightyDaysMs);
 
-      const months = Math.floor(timeLeftToUse / (30.44 * 24 * 60 * 60 * 1000));
-      const days = Math.floor((timeLeftToUse % (30.44 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
-      const hours = Math.floor((timeLeftToUse % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-      const minutes = Math.floor((timeLeftToUse % (60 * 60 * 1000)) / (60 * 1000));
+      const months = Math.floor(timeLeftMs / (30.44 * 24 * 60 * 60 * 1000));
+      const days = Math.floor((timeLeftMs % (30.44 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+      const hours = Math.floor((timeLeftMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+      const minutes = Math.floor((timeLeftMs % (60 * 60 * 1000)) / (60 * 1000));
+      const seconds = Math.floor((timeLeftMs % (60 * 1000)) / 1000);
 
-      setTimeLeft({ months, days, hours, minutes });
+      setTimeLeft({ months, days, hours, minutes, seconds });
     };
 
     calculateProgress();
-    const timer = setInterval(calculateProgress, 60000); // Update every minute
+    calculateTimeLeft();
+    const timer = setInterval(() => {
+      calculateTimeLeft();
+      calculateProgress();
+    }, 1000); // Update every second
 
     return () => clearInterval(timer);
   }, []);
@@ -47,10 +50,10 @@ const YearProgress = () => {
     <div className="w-80 sm:w-96">
       <Progress value={progress} className="h-4 mb-4" />
       <p className="text-2xl font-semibold mb-2">{progress.toFixed(2)}% of year completed</p>
-      <p className="text-xl mb-4">
-        Time left: {timeLeft.months} months, {timeLeft.days} days, {timeLeft.hours} hours, {timeLeft.minutes} minutes
-      </p>
       <MementoMoriCalendar currentWeek={currentWeek} />
+      <p className="text-xl mb-4 mt-6">
+        Time left: {timeLeft.months} months, {timeLeft.days} days, {timeLeft.hours} hours, {timeLeft.minutes} minutes, {timeLeft.seconds} seconds
+      </p>
     </div>
   );
 };
