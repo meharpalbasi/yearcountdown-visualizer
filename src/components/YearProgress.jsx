@@ -6,7 +6,6 @@ const YearProgress = () => {
   const [progress, setProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState({});
   const [currentWeek, setCurrentWeek] = useState(0);
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     const calculateProgress = () => {
@@ -34,24 +33,22 @@ const YearProgress = () => {
       const days = Math.floor((timeLeftToUse % (30.44 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
       const hours = Math.floor((timeLeftToUse % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
       const minutes = Math.floor((timeLeftToUse % (60 * 60 * 1000)) / (60 * 1000));
-      const seconds = Math.floor((timeLeftToUse % (60 * 1000)) / 1000);
 
-      setTimeLeft({ months, days, hours, minutes, seconds });
+      setTimeLeft({ months, days, hours, minutes });
     };
 
     calculateProgress();
-    const timer = setInterval(calculateProgress, 1000); // Update every second
+    const timer = setInterval(calculateProgress, 60000); // Update every minute
 
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="w-full max-w-md mx-auto text-center font-mono text-white">
-      <h1 className="text-8xl font-bold mb-8">{currentYear}</h1>
-      <Progress value={progress} className="h-4 mb-8 bg-white/10" />
-      <p className="text-6xl font-bold mb-16">{progress.toFixed(0)}%</p>
-      <p className="text-sm mb-16">
-        {timeLeft.months} months, {timeLeft.days} days, {timeLeft.hours} hours, {timeLeft.minutes} minutes, {timeLeft.seconds} seconds left
+    <div className="w-80 sm:w-96">
+      <Progress value={progress} className="h-4 mb-4" />
+      <p className="text-2xl font-semibold mb-2">{progress.toFixed(2)}% of year completed</p>
+      <p className="text-xl mb-4">
+        Time left: {timeLeft.months} months, {timeLeft.days} days, {timeLeft.hours} hours, {timeLeft.minutes} minutes
       </p>
       <MementoMoriCalendar currentWeek={currentWeek} />
     </div>
